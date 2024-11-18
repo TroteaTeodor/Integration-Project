@@ -29,7 +29,7 @@ License
 # 📥 Installation
 
 Clone the repository:
-git clone https://github.com/your-username/tetris-java.git  
+git clone https://github.com/TroteaTeodor/Integration-Project 
 cd tetris-java  
 Open the project in your preferred Java IDE.
 
