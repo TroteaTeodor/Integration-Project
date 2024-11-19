@@ -14,6 +14,11 @@ public class Pieces {
             {{0,1},{0,1},{1,1}} // J - 6
     };
     private int[][] piece;
+
+    public int[][] getPiece() {
+        return piece;
+    }
+
     public Pieces(int filler, int shapeNumber) {
         this.filler = filler;
         piece = new int[shapes[shapeNumber].length][shapes[shapeNumber][0].length];

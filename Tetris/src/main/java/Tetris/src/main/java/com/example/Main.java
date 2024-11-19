@@ -5,12 +5,20 @@ import java.util.Scanner;
 
 
 public class Main {
+    Scanner sc = new Scanner(System.in);
     public static void main(String[] args) {
-        Scanner sc = new Scanner(System.in);
-        while (true) {
-            System.out.println("Enter the filler and the shape index: ");
-            Pieces p = new Pieces(sc.nextInt(), sc.nextInt());
-            p.showPiece();
-        }
+        Board board = new Board();
+        Pieces pieces = new Pieces(4,0);
+        board.placePiece(1,1, pieces);
+        board.displayBoard();
+    }
+    public static void menuScreen() {
+
+    }
+    public static void gameScreen() {
+
+    }
+    public static void leaderboardScreen() {
+
     }
 }

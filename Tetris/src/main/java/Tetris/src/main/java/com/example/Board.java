@@ -43,4 +43,49 @@ public class Board {
             }
         }
     }
+
+    public boolean checkBoard(int x, int y, Pieces piece) {
+        for (int i=0; i<piece.getPiece().length; i++) {
+            for (int j=0; j<piece.getPiece()[i].length; j++) {
+                if (x+i > BOARD_HEIGHT || x+i < 0 || y+j < 0 || y+j > BOARD_WIDTH || board[x+i][y+j] != 0) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    public void placePiece(int x, int y, Pieces piece) {
+        if (checkBoard(x, y, piece)) {
+            for (int i = 0; i < piece.getPiece().length; i++) {
+                for (int j = 0; j < piece.getPiece()[i].length; j++) {
+                    board[x + i][y + j] = piece.getPiece()[i][j];
+                }
+            }
+        }
+        else
+        {
+            System.out.print("Invalid Position!\n");
+        }
+    }
+
+    public void displayBoard()
+    {
+        for (int x = 0; x < board.length; x++) {
+            System.out.printf("%-3d",(x+1));
+            for (int y = 0; y < board[x].length; y++) {
+                System.out.printf("| %1d | ", board[x][y]);
+            }
+            System.out.println();
+//            for (int y = 0; y < board[x].length; y++) {
+//                System.out.print("  -   ");
+//            }
+//            System.out.println();
+        }
+        System.out.print("   ");
+        for (int y = 0; y < board[0].length; y++) {
+            System.out.printf("| %-2d| ", y+1);
+        }
+    }
+
 }
