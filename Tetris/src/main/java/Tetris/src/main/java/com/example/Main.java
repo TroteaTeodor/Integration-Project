@@ -29,7 +29,7 @@ public class Main {
                 case 'd' -> game.movePiece(1);  // Move right
                 case 'w' -> game.rotatePiece(); // Rotate
                 case 's' -> game.update();      // Move down faster
-                case 'q' -> exit = false;
+                case 'q' -> exit = false; // Exit dosent work for now
             }
         }
     }
