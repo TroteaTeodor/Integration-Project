@@ -8,7 +8,7 @@ public class Player {
     }
 
     public int getPlayerScore() {
-        return playerScore;
+        return playerScore;//score
     }
 
     public void setPlayerScore(int playerScore) {
