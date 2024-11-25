@@ -9,7 +9,7 @@ public class Main {
     Scanner sc = new Scanner(System.in);
     public static void main(String[] args) {
         Board board = new Board();
-        Pieces pieces = new Pieces(4,0);
+        Pieces pieces = new Pieces(4,5);
         board.placePiece(1,1, pieces);
         board.displayBoard();
     }
