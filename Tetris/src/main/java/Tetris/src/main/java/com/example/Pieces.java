@@ -5,7 +5,7 @@ import java.util.Arrays;
 public class Pieces {
     private int filler; //The shape is made out of this number
     private int[][][] shapes = {
-            {{0,1,0},{1,1,1}}, // T - 0
+            {{0,1,0}, {1,1,1}}, // T - 0
             {{1,1,1}}, // I - 1
             {{1,1},{1,1}}, // O - 2
             {{0,1,1},{1,1,0}}, // Z - 3
@@ -39,5 +39,9 @@ public class Pieces {
             }
             System.out.println("");
         }
+    }
+    public void rotatePiece(Pieces pieces)
+    {
+        
     }
 }

@@ -5,6 +5,7 @@ import java.util.Scanner;
 
 
 public class Main {
+    //test
     Scanner sc = new Scanner(System.in);
     public static void main(String[] args) {
         Board board = new Board();
