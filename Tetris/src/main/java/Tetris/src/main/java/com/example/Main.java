@@ -5,7 +5,7 @@ import java.util.Scanner;
 
 
 public class Main {
-    //test3
+    //test2
     Scanner sc = new Scanner(System.in);
     public static void main(String[] args) {
         Board board = new Board();
