@@ -12,6 +12,8 @@ public class Main {
         Pieces pieces = new Pieces(4,5);
         board.placePiece(1,1, pieces);
         board.displayBoard();
+        System.out.println('\n');
+        Leaderboard lb = new Leaderboard();
     }
     public static void menuScreen() {
 
