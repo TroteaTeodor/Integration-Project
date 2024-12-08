@@ -1,5 +1,6 @@
 package Tetris.src.main.java.com.testing;
 
+import java.util.Random;
 import java.util.Scanner;
 
 public class Game {
@@ -10,10 +11,13 @@ public class Game {
 
     public void play() {
         System.out.println("Welcome to Brikks!");
-
+        Random rand = new Random();
         while (true) {
             int[][] block = pieces.generateBlock();
-
+            if (rand.nextInt(0,1)==0)
+            {
+                pieces.rotateBlock(block);
+            }
             System.out.println("\nNew Block:");
             pieces.printBlock(block);
             board.printGrid();
