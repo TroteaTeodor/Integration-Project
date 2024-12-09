@@ -13,14 +13,14 @@ CREATE TABLE IF NOT EXISTS players (
 -- Create the games table if it doesn't already exist
 CREATE TABLE IF NOT EXISTS games (
     id SERIAL PRIMARY KEY,
-    player_id INTEGER REFERENCES players(id) ON DELETE CASCADE,  -- Foreign key reference to players table
-    board TEXT NOT NULL,
-    score INTEGER NOT NULL,
-    energy INTEGER NOT NULL,
-    bombs INTEGER NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    player_id INT REFERENCES players(id),
+    board TEXT,
+    score INT,
+    energy INT,
+    bombs INT,
+    duration BIGINT,  -- Store duration in seconds
+    is_ended BOOLEAN DEFAULT FALSE
 );
-
 
  -- test
 select * from games;

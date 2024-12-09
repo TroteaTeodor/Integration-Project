@@ -98,7 +98,8 @@ public class Board {
         return false;
     }
 
-    public void clearFullRows() {
+    public int clearFullRows() {
+        int clearedRows = 0;
         for (int row = 0; row < ROWS; row++) {
             boolean fullRow = true;
             for (int col = 0; col < COLUMNS; col++) {
@@ -109,9 +110,12 @@ public class Board {
             }
             if (fullRow) {
                 clearRow(row);
+                clearedRows++;
             }
         }
+        return clearedRows;
     }
+    
 
     private void clearRow(int row) {
         for (int i = row; i > 0; i--) {
@@ -138,4 +142,5 @@ public class Board {
             System.arraycopy(cells, 0, grid[i], 0, COLUMNS);
         }
     }
+    
 }
