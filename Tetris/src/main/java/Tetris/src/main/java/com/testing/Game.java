@@ -43,6 +43,7 @@ public class Game {
         }
 
         game.play();
+        inputScanner.close();
     }
 
     public void play() {
