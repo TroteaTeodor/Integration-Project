@@ -103,46 +103,46 @@ public class Game {
     }
 
     private void saveGame() {
-        System.out.println("Attempting to save the game...");
-        try (Connection conn = DriverManager.getConnection(JDBC_URL, JDBC_USER, JDBC_PASSWORD)) {
-            // Check if the connection is successful
-            if (conn != null) {
-                System.out.println("Connection established!");
-            } else {
-                System.out.println("Failed to connect to the database.");
-                return;
-            }
-    
-            // Debugging: Print the values you're saving
-            System.out.println("Saving data...");
-            System.out.println("Board state: " + board.getState());
-            System.out.println("Score: " + player.getScore());
-            System.out.println("Energy: " + player.getEnergyPoints());
-            System.out.println("Bombs: " + player.getBombs());
-    
-            // SQL query to insert game data into the 'games' table
-            String saveQuery = "INSERT INTO games (board, score, energy, bombs) VALUES (?, ?, ?, ?)";
-            try (PreparedStatement pstmt = conn.prepareStatement(saveQuery)) {
-                // Set parameters for the prepared statement
-                pstmt.setString(1, board.getState());  // Assuming board.getState() returns a string representation of the board
-                pstmt.setInt(2, player.getScore());
-                pstmt.setInt(3, player.getEnergyPoints());
-                pstmt.setInt(4, player.getBombs());
-    
-                // Execute the update (insert the data)
-                int rowsAffected = pstmt.executeUpdate();
-                if (rowsAffected > 0) {
-                    System.out.println("Game saved successfully!");
-                } else {
-                    System.out.println("Failed to save the game.");
-                }
-            }
-        } catch (SQLException e) {
-            System.out.println("Error saving the game: " + e.getMessage());
-            e.printStackTrace();  // Print stack trace for better debugging
+    System.out.println("Attempting to save the game...");
+    try (Connection conn = DriverManager.getConnection(JDBC_URL, JDBC_USER, JDBC_PASSWORD)) {
+        // Check if the connection is successful
+        if (conn != null) {
+            System.out.println("Connection established!");
+        } else {
+            System.out.println("Failed to connect to the database.");
+            return;
         }
+
+        // Debugging: Print the values you're saving
+        System.out.println("Saving data...");
+        System.out.println("Board state: " + board.getState());
+        System.out.println("Score: " + player.getScore());
+        System.out.println("Energy: " + player.getEnergyPoints());
+        System.out.println("Bombs: " + player.getBombs());
+
+        // SQL query to insert game data into the 'games' table
+        String saveQuery = "INSERT INTO games (board, score, energy, bombs) VALUES (?, ?, ?, ?)";
+        try (PreparedStatement pstmt = conn.prepareStatement(saveQuery)) {
+            // Set parameters for the prepared statement
+            pstmt.setString(1, board.getState());  // Assuming board.getState() returns a string representation of the board
+            pstmt.setInt(2, player.getScore());
+            pstmt.setInt(3, player.getEnergyPoints());
+            pstmt.setInt(4, player.getBombs());
+
+            // Execute the update (insert the data)
+            int rowsAffected = pstmt.executeUpdate();
+            if (rowsAffected > 0) {
+                System.out.println("Game saved successfully!");
+            } else {
+                System.out.println("Failed to save the game.");
+            }
+        }
+    } catch (SQLException e) {
+        System.out.println("Error saving the game: " + e.getMessage());
+        e.printStackTrace();  // Print stack trace for better debugging
     }
-    
+}
+
 
     public void loadGame() {
         try (Connection conn = DriverManager.getConnection(JDBC_URL, JDBC_USER, JDBC_PASSWORD)) {
