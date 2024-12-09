@@ -1,10 +1,20 @@
 package Tetris.src.main.java.com.testing;
 
 public class Player {
+    private int playerId;  // Store the player's ID (this is what will be used to link the player to their game data)
     private String playerName;  // Store the player's name
     private int score = 0;
     private int energyPoints = 5;
     private int bombs = 3;
+
+    // Getter and setter for playerId
+    public int getPlayerId() {
+        return playerId;
+    }
+
+    public void setPlayerId(int playerId) {
+        this.playerId = playerId;
+    }
 
     // Getter and setter for playerName
     public String getPlayerName() {

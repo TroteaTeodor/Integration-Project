@@ -18,3 +18,5 @@ CREATE TABLE IF NOT EXISTS games (
     bombs INTEGER NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+
+select * from games
