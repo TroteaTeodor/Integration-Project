@@ -16,16 +16,103 @@ public class Game {
         Game game = new Game();
 
         System.out.println("Welcome to Brikks!");
-        System.out.println("Enter 'n' to start a new game or 'l' to load a saved game:");
+        game.loginOrRegister();  // Prompt for login or registration
+        game.play();
+    }
 
+    public void loginOrRegister() {
         Scanner inputScanner = new Scanner(System.in);
+        System.out.println("Enter 'l' to log in or 'r' to register:");
+
         String choice = inputScanner.nextLine();
 
-        if (choice.equalsIgnoreCase("l")) {
-            game.loadGame();
+        if (choice.equalsIgnoreCase("r")) {
+            // Register a new player
+            registerPlayer();
+        } else if (choice.equalsIgnoreCase("l")) {
+            // Log in an existing player
+            loginPlayer();
         }
+    }
 
-        game.play();
+    public void registerPlayer() {
+        Scanner inputScanner = new Scanner(System.in);
+        System.out.print("Enter a player name: ");
+        String playerName = inputScanner.nextLine();
+        System.out.print("Enter a password: ");
+        String password = inputScanner.nextLine();
+
+        try (Connection conn = DriverManager.getConnection(JDBC_URL, JDBC_USER, JDBC_PASSWORD)) {
+            String checkPlayerQuery = "SELECT * FROM players WHERE player_name = ?";
+            try (PreparedStatement pstmt = conn.prepareStatement(checkPlayerQuery)) {
+                pstmt.setString(1, playerName);
+                ResultSet rs = pstmt.executeQuery();
+
+                if (rs.next()) {
+                    System.out.println("Player name already exists! Please choose another one.");
+                    return;
+                }
+            }
+
+            String insertPlayerQuery = "INSERT INTO players (player_name, password) VALUES (?, ?)";
+            try (PreparedStatement pstmt = conn.prepareStatement(insertPlayerQuery)) {
+                pstmt.setString(1, playerName);
+                pstmt.setString(2, password);  // In production, use a hashed password instead
+                pstmt.executeUpdate();
+                System.out.println("Player registered successfully!");
+            }
+        } catch (SQLException e) {
+            System.out.println("Error registering player: " + e.getMessage());
+        }
+    }
+
+    public void loginPlayer() {
+        Scanner inputScanner = new Scanner(System.in);
+        System.out.print("Enter your player name: ");
+        String playerName = inputScanner.nextLine();
+        System.out.print("Enter your password: ");
+        String password = inputScanner.nextLine();
+
+        try (Connection conn = DriverManager.getConnection(JDBC_URL, JDBC_USER, JDBC_PASSWORD)) {
+            String query = "SELECT * FROM players WHERE player_name = ? AND password = ?";
+            try (PreparedStatement pstmt = conn.prepareStatement(query)) {
+                pstmt.setString(1, playerName);
+                pstmt.setString(2, password);  // In production, use a hashed password comparison
+                ResultSet rs = pstmt.executeQuery();
+
+                if (rs.next()) {
+                    System.out.println("Login successful!");
+                    int playerId = rs.getInt("id");
+                    loadPlayerGames(playerId);  // Load the player's games
+                    player.setPlayerName(playerName);
+                } else {
+                    System.out.println("Invalid player name or password. Please try again.");
+                }
+            }
+        } catch (SQLException e) {
+            System.out.println("Error logging in: " + e.getMessage());
+        }
+    }
+
+    public void loadPlayerGames(int playerId) {
+        try (Connection conn = DriverManager.getConnection(JDBC_URL, JDBC_USER, JDBC_PASSWORD)) {
+            String loadQuery = "SELECT * FROM games WHERE player_id = ? ORDER BY created_at DESC";
+            try (PreparedStatement pstmt = conn.prepareStatement(loadQuery)) {
+                pstmt.setInt(1, playerId);
+                ResultSet rs = pstmt.executeQuery();
+
+                while (rs.next()) {
+                    // For now, just print the saved games
+                    System.out.println("Game loaded: ");
+                    System.out.println("Score: " + rs.getInt("score"));
+                    System.out.println("Energy: " + rs.getInt("energy"));
+                    System.out.println("Bombs: " + rs.getInt("bombs"));
+                    // Load game state, board, etc. (You could use board.loadState(rs.getString("board")) here)
+                }
+            }
+        } catch (SQLException e) {
+            System.out.println("Error loading player games: " + e.getMessage());
+        }
     }
 
     public void play() {
