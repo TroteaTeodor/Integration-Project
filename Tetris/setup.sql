@@ -21,5 +21,7 @@ CREATE TABLE IF NOT EXISTS games (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+
+ -- test
 select * from games;
 SELECT * from players;
