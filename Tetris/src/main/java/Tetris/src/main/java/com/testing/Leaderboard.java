@@ -1,8 +1,6 @@
 package Tetris.src.main.java.com.testing;
 
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.List;
 
 public class Leaderboard {
     private static final String JDBC_URL = "jdbc:postgresql://localhost:5432/ascii29";

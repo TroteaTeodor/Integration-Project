@@ -114,8 +114,7 @@ public class Board {
             }
         }
         return clearedRows;
-    }
-    
+    }    
 
     private void clearRow(int row) {
         for (int i = row; i > 0; i--) {
