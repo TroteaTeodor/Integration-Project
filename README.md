@@ -1,6 +1,6 @@
-# Tetris in Java 🎮
+# Brikks in Java 🎮
 
-Welcome to Tetris in Java, a modern recreation of the classic Tetris game with a unique ASCII-based graphical interface. This project showcases core Java programming concepts while delivering a nostalgic gaming experience.
+Welcome to Brikks in Java, a modern recreation of the classic Brikks game with a unique ASCII-based graphical interface. This project showcases core Java programming concepts while delivering a nostalgic gaming experience.
 
 # 🚀 Features
 
