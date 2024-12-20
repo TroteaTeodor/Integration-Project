@@ -14,7 +14,47 @@ public class Game {
     private static final String JDBC_USER = "postgres";
     private static final String JDBC_PASSWORD = "Student_1234";
 
+    // SQL statements
+    private static String createPlayersTable = """
+                CREATE TABLE IF NOT EXISTS players (
+                    id SERIAL PRIMARY KEY,
+                    player_name VARCHAR(50) NOT NULL UNIQUE,
+                    password VARCHAR(100) NOT NULL,
+                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                );
+            """;
+
+    private static String createGamesTable = """
+                CREATE TABLE IF NOT EXISTS games (
+                    id SERIAL PRIMARY KEY,
+                    player_id INT REFERENCES players(id),
+                    board TEXT,
+                    score INT,
+                    energy INT,
+                    bombs INT,
+                    start_time TIMESTAMP NOT NULL,
+                    end_time TIMESTAMP DEFAULT NULL,
+                    is_ended BOOLEAN DEFAULT FALSE
+                );
+            """;
+
     public static void main(String[] args) {
+
+        try (Connection connection = DriverManager.getConnection(JDBC_URL, JDBC_USER, JDBC_PASSWORD)) {
+            System.out.println("Connected to the database.");
+
+            try (Statement statement = connection.createStatement()) {
+                // Execute each SQL statement
+                statement.execute(createPlayersTable);
+                System.out.println("Created 'players' table successfully.");
+
+                statement.execute(createGamesTable);
+                System.out.println("Created 'games' table successfully.");
+            }
+        } catch (SQLException e) {
+            System.err.println("Error executing SQL: " + e.getMessage());
+        }
+
         Game game = new Game();
 
         System.out.println("Welcome to Brikks!");
@@ -38,63 +78,76 @@ public class Game {
     }
 
     public void mainMenu() {
-        while (true) {
+        boolean isRunning = true; // Flag to manage the main loop
+    
+        while (isRunning) {
             System.out.println(
-                    "\nEnter 'n' to start a new game, 'l' to load a saved game, 'v' to view the leaderboard, 'q' to quit the game:");
-
+                "\nEnter 'n' to start a new game, 'l' to load a saved game, 'v' to view the leaderboard, 'q' to quit the game:");
+    
             String choice = scanner.nextLine();
-
+    
             if (choice.equalsIgnoreCase("n")) {
                 System.out.println("Starting a new game...");
-                play(); // Start a new game
+                resetGameState(); // Reset the game state before starting
+                play();
             } else if (choice.equalsIgnoreCase("l")) {
-                loadGame(); // Will automatically start the game after loading
+                loadGame();
             } else if (choice.equalsIgnoreCase("v")) {
                 viewLeaderboard();
             } else if (choice.equalsIgnoreCase("q")) {
                 System.out.println("Exiting the game.");
-                break; // Exit the program
+                isRunning = false; // Exit the main menu loop
             } else {
                 System.out.println("Invalid input. Please choose a valid option.");
             }
         }
+    
+        System.out.println("Goodbye!"); // Final message before quitting
     }
 
     public void play() {
         startTime = System.currentTimeMillis(); // Initialize the start time at the beginning of the game
-
         System.out.println("Welcome to Brikks!");
-
-        while (true) {
+    
+        boolean isPlaying = true; // Flag to manage the game loop
+    
+        while (isPlaying) {
             // Generate a new block with a random color
             String[][] block = pieces.generateBlock();
-
+    
             System.out.println("\nNew Block:");
             pieces.printBlock(block);
             board.printGrid();
-
+    
             // Display player information
             displayPlayerInfo();
-
+    
             boolean placed = handlePlayerAction(block); // Handle the action (rotate, bomb, etc.)
-
+    
             if (!placed) {
-                // If the player decides to quit or game over happens, return to the menu
-                break;
+                // If the player decides to quit or game over happens, end the game loop
+                isPlaying = false;
             }
-
+    
             board.clearFullRows();
-
+    
             if (board.isGameOver()) {
                 System.out.println("Game Over! Blocks reached the top.");
-                break;
+                isPlaying = false;
             }
         }
-
+    
         System.out.println("Final Score: " + player.getScore());
         saveGame(); // Save game at the end
-        mainMenu(); // Return to the main menu after the game ends
     }
+
+    private void resetGameState() {
+        board.reset();  // Reset the board state
+        startTime = 0;  // Reset the start time
+    }
+    
+    
+    
 
     private boolean handlePlayerAction(String[][] block) {
         while (true) {
@@ -175,12 +228,12 @@ public class Game {
                 ResultSet rs = pstmt.executeQuery();
                 if (rs.next()) {
                     // If an ongoing game exists, update it
-                    String updateQuery = "UPDATE games SET score = ?, energy = ?, bombs = ?, duration = ?, is_ended = TRUE WHERE id = ?";
+                    String updateQuery = "UPDATE games SET score = ?, energy = ?, bombs = ?, end_time = ?, is_ended = TRUE WHERE id = ?";
                     try (PreparedStatement updateStmt = conn.prepareStatement(updateQuery)) {
                         updateStmt.setInt(1, player.getScore());
                         updateStmt.setInt(2, player.getEnergyPoints());
                         updateStmt.setInt(3, player.getBombs());
-                        updateStmt.setLong(4, durationSeconds); // Save the game duration in seconds
+                        updateStmt.setTimestamp(4, new Timestamp(System.currentTimeMillis())); // Set end_time
                         updateStmt.setInt(5, rs.getInt("id"));
                         updateStmt.executeUpdate();
                         System.out.println("Game updated successfully.");
@@ -188,14 +241,15 @@ public class Game {
                 } else {
                     // If no ongoing game exists, insert a new record (should only happen if game
                     // was never saved)
-                    String insertQuery = "INSERT INTO games (player_id, board, score, energy, bombs, duration, is_ended) VALUES (?, ?, ?, ?, ?, ?, TRUE)";
+                    String insertQuery = "INSERT INTO games (player_id, board, score, energy, bombs, start_time, end_time, is_ended) VALUES (?, ?, ?, ?, ?, ?, ?, TRUE)";
                     try (PreparedStatement pstmtInsert = conn.prepareStatement(insertQuery)) {
                         pstmtInsert.setInt(1, player.getPlayerId());
                         pstmtInsert.setString(2, board.getState());
                         pstmtInsert.setInt(3, player.getScore());
                         pstmtInsert.setInt(4, player.getEnergyPoints());
                         pstmtInsert.setInt(5, player.getBombs());
-                        pstmtInsert.setLong(6, durationSeconds); // Save the game duration in seconds
+                        pstmtInsert.setTimestamp(6, new Timestamp(startTime)); // Set start_time
+                        pstmtInsert.setTimestamp(7, new Timestamp(System.currentTimeMillis())); // Set end_time
                         pstmtInsert.executeUpdate();
                         System.out.println("New game saved successfully.");
                     }
@@ -208,15 +262,35 @@ public class Game {
 
     public void loadGame() {
         try (Connection conn = DriverManager.getConnection(JDBC_URL, JDBC_USER, JDBC_PASSWORD)) {
-            String loadQuery = "SELECT * FROM games WHERE player_id = ? ORDER BY id DESC LIMIT 1";
+            String loadQuery = """
+                SELECT id, board, score, energy, bombs, start_time, end_time, is_ended
+                FROM games
+                WHERE player_id = ?
+                ORDER BY id DESC
+                LIMIT 1
+            """;
             try (PreparedStatement pstmt = conn.prepareStatement(loadQuery)) {
                 pstmt.setInt(1, player.getPlayerId()); // Using playerId to load the player's game
                 ResultSet rs = pstmt.executeQuery();
                 if (rs.next()) {
+                    // Load game state from the database
                     board.loadState(rs.getString("board"));
                     player.setScore(rs.getInt("score"));
                     player.setEnergyPoints(rs.getInt("energy"));
                     player.setBombs(rs.getInt("bombs"));
+    
+                    // Retrieve start_time and end_time
+                    Timestamp startTime = rs.getTimestamp("start_time");
+                    Timestamp endTime = rs.getTimestamp("end_time");
+    
+                    // Display the timestamps
+                    System.out.println("Game started at: " + startTime);
+                    if (endTime != null) {
+                        System.out.println("Game ended at: " + endTime);
+                    } else {
+                        System.out.println("Game is still in progress.");
+                    }
+    
                     System.out.println("Game loaded successfully.");
                     play(); // Automatically continue playing the game after loading
                 } else {
@@ -227,6 +301,7 @@ public class Game {
             System.out.println("Error loading the game: " + e.getMessage());
         }
     }
+    
 
     public void createPlayer() {
         System.out.println("Enter a new player name:");
