@@ -1,4 +1,4 @@
--- Active: 1733749329420@@127.0.0.1@5432@ascii29@public
+-- Active: 1733753063675@@127.0.0.1@5432@ascii29@public
 -- Create the players table
 -- Create the players table if it doesn't already exist
 DROP Table if EXISTS players, games;
