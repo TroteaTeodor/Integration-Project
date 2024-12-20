@@ -79,7 +79,7 @@ public class Game {
             System.out.println("--------------------------------");
 
         } catch (SQLException e) {
-            e.printStackTrace();
+            System.out.println("Usernames in database error: " + e.getMessage());
         }
 
         Scanner inputScanner = new Scanner(System.in);
