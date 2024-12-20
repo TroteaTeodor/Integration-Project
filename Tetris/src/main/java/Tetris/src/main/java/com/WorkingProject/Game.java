@@ -61,6 +61,27 @@ public class Game {
 
         // Ask user to login or create a new account
         System.out.println("Enter 'l' to login, 'c' to create a new player:");
+
+        //Show usernames in db
+        String usernameQuery = "SELECT player_name FROM players";
+        try (
+                Connection connection = DriverManager.getConnection(JDBC_URL, JDBC_USER, JDBC_PASSWORD);
+
+                PreparedStatement preparedStatement = connection.prepareStatement(usernameQuery);
+
+                ResultSet resultSet = preparedStatement.executeQuery()
+        ) {
+            System.out.println("Usernames in the players table:");
+            while (resultSet.next()) {
+                String username = resultSet.getString("player_name");
+                System.out.println(username);
+            }
+            System.out.println("--------------------------------");
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
         Scanner inputScanner = new Scanner(System.in);
         String choice = inputScanner.nextLine();
 
@@ -79,13 +100,13 @@ public class Game {
 
     public void mainMenu() {
         boolean isRunning = true; // Flag to manage the main loop
-    
+
         while (isRunning) {
             System.out.println(
-                "\nEnter 'n' to start a new game, 'l' to load a saved game, 'v' to view the leaderboard, 'q' to quit the game:");
-    
+                    "\nEnter 'n' to start a new game, 'l' to load a saved game, 'v' to view the leaderboard, 'q' to quit the game:");
+
             String choice = scanner.nextLine();
-    
+
             if (choice.equalsIgnoreCase("n")) {
                 System.out.println("Starting a new game...");
                 resetGameState(); // Reset the game state before starting
@@ -101,42 +122,42 @@ public class Game {
                 System.out.println("Invalid input. Please choose a valid option.");
             }
         }
-    
+
         System.out.println("Goodbye!"); // Final message before quitting
     }
 
     public void play() {
         startTime = System.currentTimeMillis(); // Initialize the start time at the beginning of the game
         System.out.println("Welcome to Brikks!");
-    
+
         boolean isPlaying = true; // Flag to manage the game loop
-    
+
         while (isPlaying) {
             // Generate a new block with a random color
             String[][] block = pieces.generateBlock();
-    
+
             System.out.println("\nNew Block:");
             pieces.printBlock(block);
             board.printGrid();
-    
+
             // Display player information
             displayPlayerInfo();
-    
+
             boolean placed = handlePlayerAction(block); // Handle the action (rotate, bomb, etc.)
-    
+
             if (!placed) {
                 // If the player decides to quit or game over happens, end the game loop
                 isPlaying = false;
             }
-    
+
             board.clearFullRows();
-    
+
             if (board.isGameOver()) {
                 System.out.println("Game Over! Blocks reached the top.");
                 isPlaying = false;
             }
         }
-    
+
         System.out.println("Final Score: " + player.getScore());
         saveGame(); // Save game at the end
     }
@@ -145,9 +166,9 @@ public class Game {
         board.reset();  // Reset the board state
         startTime = 0;  // Reset the start time
     }
-    
-    
-    
+
+
+
 
     private boolean handlePlayerAction(String[][] block) {
         while (true) {
@@ -278,11 +299,11 @@ public class Game {
                     player.setScore(rs.getInt("score"));
                     player.setEnergyPoints(rs.getInt("energy"));
                     player.setBombs(rs.getInt("bombs"));
-    
+
                     // Retrieve start_time and end_time
                     Timestamp startTime = rs.getTimestamp("start_time");
                     Timestamp endTime = rs.getTimestamp("end_time");
-    
+
                     // Display the timestamps
                     System.out.println("Game started at: " + startTime);
                     if (endTime != null) {
@@ -290,7 +311,7 @@ public class Game {
                     } else {
                         System.out.println("Game is still in progress.");
                     }
-    
+
                     System.out.println("Game loaded successfully.");
                     play(); // Automatically continue playing the game after loading
                 } else {
@@ -301,7 +322,7 @@ public class Game {
             System.out.println("Error loading the game: " + e.getMessage());
         }
     }
-    
+
 
     public void createPlayer() {
         System.out.println("Enter a new player name:");
