@@ -1,9 +1,9 @@
 package Tetris.src.main.java.com.example;
 
-import java.util.Arrays;
+//import java.util.Arrays;
 
 public class Pieces {
-    private int filler; //The shape is made out of this number
+    //private int filler; //The shape is made out of this number
     private int[][][] shapes = {
             {{0,1,0}, {1,1,1}}, // T - 0
             {{1,1,1}}, // I - 1
@@ -20,7 +20,7 @@ public class Pieces {
     }
 
     public Pieces(int filler, int shapeNumber) {
-        this.filler = filler;
+        //this.filler = filler;
         piece = new int[shapes[shapeNumber].length][shapes[shapeNumber][0].length];
         for (int i = 0; i < shapes[shapeNumber].length; i++) {
             for (int j = 0; j < shapes[shapeNumber][i].length; j++) {

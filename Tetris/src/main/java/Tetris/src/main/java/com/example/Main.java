@@ -1,6 +1,6 @@
 package Tetris.src.main.java.com.example;
 
-import java.sql.SQLOutput;
+//import java.sql.SQLOutput;
 import java.util.Scanner;
 
 
@@ -13,7 +13,7 @@ public class Main {
         board.placePiece(1,1, pieces);
         board.displayBoard();
         System.out.println('\n');
-        Leaderboard lb = new Leaderboard();
+       // Leaderboard lb = new Leaderboard();
     }
     public static void menuScreen() {
 
