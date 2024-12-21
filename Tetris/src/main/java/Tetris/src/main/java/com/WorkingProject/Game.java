@@ -99,31 +99,41 @@ public class Game {
     }
 
     public void mainMenu() {
-        boolean isRunning = true; // Flag to manage the main loop
-
+        boolean isRunning = true;
+    
         while (isRunning) {
             System.out.println(
-                    "\nEnter 'n' to start a new game, 'l' to load a saved game, 'v' to view the leaderboard, 'q' to quit the game:");
-
+                    "\nEnter 'n' to start a new game, 'l' to load a saved game, 'v' to view the leaderboard, 's' to search for a player, 'q' to quit the game:");
+    
             String choice = scanner.nextLine();
-
+    
             if (choice.equalsIgnoreCase("n")) {
                 System.out.println("Starting a new game...");
-                resetGameState(); // Reset the game state before starting
+                resetGameState();
                 play();
             } else if (choice.equalsIgnoreCase("l")) {
                 loadGame();
             } else if (choice.equalsIgnoreCase("v")) {
                 viewLeaderboard();
+            } else if (choice.equalsIgnoreCase("s")) {
+                searchPlayerScores();
             } else if (choice.equalsIgnoreCase("q")) {
                 System.out.println("Exiting the game.");
-                isRunning = false; // Exit the main menu loop
+                isRunning = false;
             } else {
                 System.out.println("Invalid input. Please choose a valid option.");
             }
         }
+    
+        System.out.println("Goodbye!");
+    }
 
-        System.out.println("Goodbye!"); // Final message before quitting
+    public void searchPlayerScores() {
+        System.out.println("Enter the player's name to search their top scores:");
+        String playerName = scanner.nextLine();
+    
+        Leaderboard leaderboard = new Leaderboard();
+        leaderboard.showPlayerTopScores(playerName);
     }
 
     public void play() {
@@ -233,41 +243,44 @@ public class Game {
 
     private void saveGame() {
         try (Connection conn = DriverManager.getConnection(JDBC_URL, JDBC_USER, JDBC_PASSWORD)) {
-            // Get the current time and calculate the duration of the game
-            long endTime = System.currentTimeMillis();
-            long durationMillis = endTime - startTime;
-            long durationSeconds = durationMillis / 1000;
-
-            // Check if a game already exists for the player (based on player_id) and if it
-            // is ongoing
+            // Check if a game already exists for the player and is ongoing
             String checkQuery = "SELECT id FROM games WHERE player_id = ? AND is_ended = FALSE LIMIT 1";
             try (PreparedStatement pstmt = conn.prepareStatement(checkQuery)) {
                 pstmt.setInt(1, player.getPlayerId());
                 ResultSet rs = pstmt.executeQuery();
+    
                 if (rs.next()) {
                     // If an ongoing game exists, update it
-                    String updateQuery = "UPDATE games SET score = ?, energy = ?, bombs = ?, end_time = ?, is_ended = TRUE WHERE id = ?";
+                    String updateQuery = """
+                        UPDATE games 
+                        SET score = ?, energy = ?, bombs = ?, board = ?, end_time = ?, is_ended = TRUE 
+                        WHERE id = ?
+                    """;
                     try (PreparedStatement updateStmt = conn.prepareStatement(updateQuery)) {
                         updateStmt.setInt(1, player.getScore());
                         updateStmt.setInt(2, player.getEnergyPoints());
                         updateStmt.setInt(3, player.getBombs());
-                        updateStmt.setTimestamp(4, new Timestamp(System.currentTimeMillis())); // Set end_time
-                        updateStmt.setInt(5, rs.getInt("id"));
+                        updateStmt.setString(4, board.getState());
+                        updateStmt.setTimestamp(5, new Timestamp(System.currentTimeMillis()));
+                        updateStmt.setInt(6, rs.getInt("id"));
                         updateStmt.executeUpdate();
                         System.out.println("Game updated successfully.");
                     }
                 } else {
-                    // If no ongoing game exists, insert a new record (should only happen if game was never saved)
-                    String insertQuery = "INSERT INTO games (player_id, board, score, energy, bombs, start_time, end_time, is_ended) VALUES (?, ?, ?, ?, ?, ?, ?, TRUE)";
-                    try (PreparedStatement pstmtInsert = conn.prepareStatement(insertQuery)) {
-                        pstmtInsert.setInt(1, player.getPlayerId());
-                        pstmtInsert.setString(2, board.getState());
-                        pstmtInsert.setInt(3, player.getScore());
-                        pstmtInsert.setInt(4, player.getEnergyPoints());
-                        pstmtInsert.setInt(5, player.getBombs());
-                        pstmtInsert.setTimestamp(6, new Timestamp(startTime)); // Set start_time
-                        pstmtInsert.setTimestamp(7, new Timestamp(System.currentTimeMillis())); // Set end_time
-                        pstmtInsert.executeUpdate();
+                    // Insert a new game record
+                    String insertQuery = """
+                        INSERT INTO games (player_id, board, score, energy, bombs, start_time, end_time, is_ended) 
+                        VALUES (?, ?, ?, ?, ?, ?, ?, TRUE)
+                    """;
+                    try (PreparedStatement insertStmt = conn.prepareStatement(insertQuery)) {
+                        insertStmt.setInt(1, player.getPlayerId());
+                        insertStmt.setString(2, board.getState());
+                        insertStmt.setInt(3, player.getScore());
+                        insertStmt.setInt(4, player.getEnergyPoints());
+                        insertStmt.setInt(5, player.getBombs());
+                        insertStmt.setTimestamp(6, new Timestamp(startTime)); // Start time
+                        insertStmt.setTimestamp(7, new Timestamp(System.currentTimeMillis())); // End time
+                        insertStmt.executeUpdate();
                         System.out.println("New game saved successfully.");
                     }
                 }
