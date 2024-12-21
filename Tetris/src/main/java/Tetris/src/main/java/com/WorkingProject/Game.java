@@ -167,9 +167,6 @@ public class Game {
         startTime = 0;  // Reset the start time
     }
 
-
-
-
     private boolean handlePlayerAction(String[][] block) {
         while (true) {
             System.out.println(
@@ -239,7 +236,7 @@ public class Game {
             // Get the current time and calculate the duration of the game
             long endTime = System.currentTimeMillis();
             long durationMillis = endTime - startTime;
-            long durationSeconds = durationMillis / 1000; // Duration in seconds
+            long durationSeconds = durationMillis / 1000;
 
             // Check if a game already exists for the player (based on player_id) and if it
             // is ongoing
@@ -260,8 +257,7 @@ public class Game {
                         System.out.println("Game updated successfully.");
                     }
                 } else {
-                    // If no ongoing game exists, insert a new record (should only happen if game
-                    // was never saved)
+                    // If no ongoing game exists, insert a new record (should only happen if game was never saved)
                     String insertQuery = "INSERT INTO games (player_id, board, score, energy, bombs, start_time, end_time, is_ended) VALUES (?, ?, ?, ?, ?, ?, ?, TRUE)";
                     try (PreparedStatement pstmtInsert = conn.prepareStatement(insertQuery)) {
                         pstmtInsert.setInt(1, player.getPlayerId());
@@ -291,7 +287,7 @@ public class Game {
                 LIMIT 1
             """;
             try (PreparedStatement pstmt = conn.prepareStatement(loadQuery)) {
-                pstmt.setInt(1, player.getPlayerId()); // Using playerId to load the player's game
+                pstmt.setInt(1, player.getPlayerId());
                 ResultSet rs = pstmt.executeQuery();
                 if (rs.next()) {
                     // Load game state from the database
@@ -376,7 +372,7 @@ public class Game {
                         player.setPlayerId(rs.getInt("id"));
                         player.setPlayerName(rs.getString("player_name")); // Set the player's name
                         System.out.println("Login successful.");
-                        break; // Exit the loop after a successful login
+                        break;
                     } else {
                         System.out.println("Invalid credentials. Please try again.");
                     }
