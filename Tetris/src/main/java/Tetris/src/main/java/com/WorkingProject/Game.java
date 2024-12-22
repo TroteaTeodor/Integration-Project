@@ -91,6 +91,7 @@ public class Game {
                     } else {
                         System.out.println("Invalid input. Please enter 'l' to login or 'c' to create a new player.");
                     }
+                    inputScanner.close();
                 }
             
                 // Now go back to the main menu after successful login or account creation
