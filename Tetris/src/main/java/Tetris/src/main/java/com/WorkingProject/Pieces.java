@@ -19,10 +19,19 @@ public class Pieces {
         
         // Choose a random color
         String color = COLORS[random.nextInt(COLORS.length)];
-
+    
         // Convert shape to a colored block
-        return applyColor(shape, color);
+        String[][] coloredBlock = applyColor(shape, color);
+    
+        // Apply a random number of rotations (0 to 3)
+        int rotations = random.nextInt(4);
+        for (int i = 0; i < rotations; i++) {
+            coloredBlock = rotateBlock(coloredBlock);
+        }
+    
+        return coloredBlock;
     }
+    
 
     private String[][] applyColor(int[][] shape, String color) {
         String[][] coloredBlock = new String[shape.length][shape[0].length];
@@ -48,7 +57,8 @@ public class Pieces {
     public void printBlock(String[][] block) {
         for (String[] row : block) {
             for (String cell : row) {
-                System.out.print(cell.equals(".") ? "." : cell + " ");
+                // Print cell with padding to ensure alignment
+                System.out.print(cell.equals(".") ? " . " : " " + cell + " ");
             }
             System.out.println();
         }
