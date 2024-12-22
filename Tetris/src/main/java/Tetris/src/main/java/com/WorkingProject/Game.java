@@ -336,24 +336,27 @@ public class Game {
     public void createPlayer() {
         System.out.println("Enter a new player name:");
         String playerName = scanner.nextLine();
-
+    
         System.out.println("Enter a password for the new player:");
         String password = scanner.nextLine();
-
+    
         try (Connection conn = DriverManager.getConnection(JDBC_URL, JDBC_USER, JDBC_PASSWORD)) {
-            String insertPlayerQuery = "INSERT INTO players (player_name, password) VALUES (?, ?)";
-            try (PreparedStatement pstmt = conn.prepareStatement(insertPlayerQuery, Statement.RETURN_GENERATED_KEYS)) {
+            
+            // Insert the new player and retrieve the generated player ID using RETURNING
+            String insertPlayerQuery = "INSERT INTO players (player_name, password) VALUES (?, ?) RETURNING id";
+            
+            try (PreparedStatement pstmt = conn.prepareStatement(insertPlayerQuery)) {
                 pstmt.setString(1, playerName);
                 pstmt.setString(2, password); // Note: In a real application, hash the password
-                pstmt.executeUpdate();
-
-                ResultSet rs = pstmt.getGeneratedKeys();
+                ResultSet rs = pstmt.executeQuery();
+    
                 if (rs.next()) {
-                    player.setPlayerId(rs.getInt(1)); // Set the generated player ID
-                    player.setPlayerName(playerName); // Set the player's name
+                    int playerId = rs.getInt("id"); // Get the auto-generated player ID
+                    player.setPlayerId(playerId);   // Set the generated player ID
+                    player.setPlayerName(playerName);
+    
+                    System.out.println("Player created successfully with ID: " + playerId);
                 }
-
-                System.out.println("Player created successfully.");
             }
         } catch (SQLException e) {
             System.out.println("Error creating the player: " + e.getMessage());
