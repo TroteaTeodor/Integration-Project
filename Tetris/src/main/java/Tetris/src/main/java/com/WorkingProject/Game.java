@@ -38,65 +38,64 @@ public class Game {
                 );
             """;
 
-    public static void main(String[] args) {
-
-        try (Connection connection = DriverManager.getConnection(JDBC_URL, JDBC_USER, JDBC_PASSWORD)) {
-            System.out.println("Connected to the database.");
-
-            try (Statement statement = connection.createStatement()) {
-                // Execute each SQL statement
-                statement.execute(createPlayersTable);
-                System.out.println("Created 'players' table successfully.");
-
-                statement.execute(createGamesTable);
-                System.out.println("Created 'games' table successfully.");
+            public static void main(String[] args) {
+                try (Connection connection = DriverManager.getConnection(JDBC_URL, JDBC_USER, JDBC_PASSWORD)) {
+                    System.out.println("Connected to the database.");
+            
+                    try (Statement statement = connection.createStatement()) {
+                        // Execute each SQL statement
+                        statement.execute(createPlayersTable);
+                        System.out.println("Created 'players' table successfully.");
+            
+                        statement.execute(createGamesTable);
+                        System.out.println("Created 'games' table successfully.");
+                    }
+                } catch (SQLException e) {
+                    System.err.println("Error executing SQL: " + e.getMessage());
+                }
+            
+                Game game = new Game();
+            
+                System.out.println("Welcome to Brikks!");
+            
+                // Ask user to login or create a new account with input validation
+                String choice = "";
+                while (!choice.equalsIgnoreCase("l") && !choice.equalsIgnoreCase("c")) {
+                    System.out.println("Enter 'l' to login, 'c' to create a new player:");
+            
+                    // Show usernames in db
+                    String usernameQuery = "SELECT player_name FROM players";
+                    try (
+                        Connection connection = DriverManager.getConnection(JDBC_URL, JDBC_USER, JDBC_PASSWORD);
+                        PreparedStatement preparedStatement = connection.prepareStatement(usernameQuery);
+                        ResultSet resultSet = preparedStatement.executeQuery()
+                    ) {
+                        System.out.println("Usernames in the players table:");
+                        while (resultSet.next()) {
+                            String username = resultSet.getString("player_name");
+                            System.out.println(username);
+                        }
+                        System.out.println("--------------------------------");
+            
+                    } catch (SQLException e) {
+                        System.out.println("Usernames in database error: " + e.getMessage());
+                    }
+            
+                    Scanner inputScanner = new Scanner(System.in);
+                    choice = inputScanner.nextLine();
+            
+                    if (choice.equalsIgnoreCase("l")) {
+                        game.login();
+                    } else if (choice.equalsIgnoreCase("c")) {
+                        game.createPlayer();
+                    } else {
+                        System.out.println("Invalid input. Please enter 'l' to login or 'c' to create a new player.");
+                    }
+                }
+            
+                // Now go back to the main menu after successful login or account creation
+                game.mainMenu();
             }
-        } catch (SQLException e) {
-            System.err.println("Error executing SQL: " + e.getMessage());
-        }
-
-        Game game = new Game();
-
-        System.out.println("Welcome to Brikks!");
-
-        // Ask user to login or create a new account
-        System.out.println("Enter 'l' to login, 'c' to create a new player:");
-
-        //Show usernames in db
-        String usernameQuery = "SELECT player_name FROM players";
-        try (
-                Connection connection = DriverManager.getConnection(JDBC_URL, JDBC_USER, JDBC_PASSWORD);
-
-                PreparedStatement preparedStatement = connection.prepareStatement(usernameQuery);
-
-                ResultSet resultSet = preparedStatement.executeQuery()
-        ) {
-            System.out.println("Usernames in the players table:");
-            while (resultSet.next()) {
-                String username = resultSet.getString("player_name");
-                System.out.println(username);
-            }
-            System.out.println("--------------------------------");
-
-        } catch (SQLException e) {
-            System.out.println("Usernames in database error: " + e.getMessage());
-        }
-
-        Scanner inputScanner = new Scanner(System.in);
-        String choice = inputScanner.nextLine();
-
-        if (choice.equalsIgnoreCase("l")) {
-            game.login();
-        } else if (choice.equalsIgnoreCase("c")) {
-            game.createPlayer();
-        } else {
-            System.out.println("Invalid input. Please enter 'l' to login or 'c' to create a new player.");
-        }
-
-        // Now go back to the main menu
-        game.mainMenu();
-        inputScanner.close();
-    }
 
     public void mainMenu() {
         boolean isRunning = true;
