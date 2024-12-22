@@ -1,4 +1,5 @@
 package Tetris.src.main.java.com.WorkingProject;
+
 public class LeaderboardEntry {
     private String playerName;
     private int score;

@@ -1,37 +1,37 @@
 package Tetris.src.main.java.com.WorkingProject;
+
 import java.util.Random;
 
 public class Pieces {
     private static final int[][][] SHAPES = {
-        {{1, 1, 1}, {1, 0, 0}},  // L-shape
-        {{1, 1, 1, 1}},          // Line
-        {{1, 1}, {1, 1}},        // Square
-        {{0, 1, 1}, {1, 1, 0}},  // Z-shape
-        {{1, 1, 0}, {0, 1, 1}}   // S-shape
+            { { 1, 1, 1 }, { 1, 0, 0 } }, // L-shape
+            { { 1, 1, 1, 1 } }, // Line
+            { { 1, 1 }, { 1, 1 } }, // Square
+            { { 0, 1, 1 }, { 1, 1, 0 } }, // Z-shape
+            { { 1, 1, 0 }, { 0, 1, 1 } } // S-shape
     };
 
-    private static final String[] COLORS = {"b", "r", "y", "g", "p"}; // Available colors
+    private static final String[] COLORS = { "b", "r", "y", "g", "p" }; // Available colors
     private final Random random = new Random();
 
     public String[][] generateBlock() {
         // Choose a random shape
         int[][] shape = SHAPES[random.nextInt(SHAPES.length)];
-        
+
         // Choose a random color
         String color = COLORS[random.nextInt(COLORS.length)];
-    
+
         // Convert shape to a colored block
         String[][] coloredBlock = applyColor(shape, color);
-    
+
         // Apply a random number of rotations (0 to 3)
         int rotations = random.nextInt(4);
         for (int i = 0; i < rotations; i++) {
             coloredBlock = rotateBlock(coloredBlock);
         }
-    
+
         return coloredBlock;
     }
-    
 
     private String[][] applyColor(int[][] shape, String color) {
         String[][] coloredBlock = new String[shape.length][shape[0].length];

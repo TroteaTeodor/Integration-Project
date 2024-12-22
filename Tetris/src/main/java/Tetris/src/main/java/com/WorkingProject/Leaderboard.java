@@ -12,13 +12,13 @@ public class Leaderboard {
     public void showLeaderboard() {
         try (Connection conn = DriverManager.getConnection(JDBC_URL, JDBC_USER, JDBC_PASSWORD)) {
             String leaderboardQuery = """
-                SELECT player_name, score, start_time, end_time
-                FROM games
-                INNER JOIN players ON games.player_id = players.id
-                WHERE is_ended = TRUE
-                ORDER BY score DESC
-                LIMIT 5
-            """;
+                        SELECT player_name, score, start_time, end_time
+                        FROM games
+                        INNER JOIN players ON games.player_id = players.id
+                        WHERE is_ended = TRUE
+                        ORDER BY score DESC
+                        LIMIT 5
+                    """;
             try (PreparedStatement pstmt = conn.prepareStatement(leaderboardQuery)) {
                 ResultSet rs = pstmt.executeQuery();
                 System.out.println("Leaderboard:");
@@ -42,13 +42,13 @@ public class Leaderboard {
     public void showPlayerTopScores(String playerName) {
         try (Connection conn = DriverManager.getConnection(JDBC_URL, JDBC_USER, JDBC_PASSWORD)) {
             String playerScoresQuery = """
-                SELECT score, start_time, end_time
-                FROM games
-                INNER JOIN players ON games.player_id = players.id
-                WHERE players.player_name = ? AND is_ended = TRUE
-                ORDER BY score DESC
-                LIMIT 5
-            """;
+                        SELECT score, start_time, end_time
+                        FROM games
+                        INNER JOIN players ON games.player_id = players.id
+                        WHERE players.player_name = ? AND is_ended = TRUE
+                        ORDER BY score DESC
+                        LIMIT 5
+                    """;
             try (PreparedStatement pstmt = conn.prepareStatement(playerScoresQuery)) {
                 pstmt.setString(1, playerName);
                 ResultSet rs = pstmt.executeQuery();

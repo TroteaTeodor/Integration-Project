@@ -38,75 +38,74 @@ public class Game {
                 );
             """;
 
-            public static void main(String[] args) {
-                try (Connection connection = DriverManager.getConnection(JDBC_URL, JDBC_USER, JDBC_PASSWORD)) {
-                    System.out.println("Connected to the database.");
-            
-                    try (Statement statement = connection.createStatement()) {
-                        // Execute each SQL statement
-                        statement.execute(createPlayersTable);
-                        System.out.println("Created 'players' table successfully.");
-            
-                        statement.execute(createGamesTable);
-                        System.out.println("Created 'games' table successfully.");
-                    }
-                } catch (SQLException e) {
-                    System.err.println("Error executing SQL: " + e.getMessage());
-                }
-            
-                Game game = new Game();
-            
-                System.out.println("Welcome to Brikks!");
-            
-                // Ask user to login or create a new account with input validation
-                String choice = "";
-                while (!choice.equalsIgnoreCase("l") && !choice.equalsIgnoreCase("c")) {
-                    System.out.println("Enter 'l' to login, 'c' to create a new player:");
-            
-                    // Show usernames in db
-                    String usernameQuery = "SELECT player_name FROM players";
-                    try (
-                        Connection connection = DriverManager.getConnection(JDBC_URL, JDBC_USER, JDBC_PASSWORD);
-                        PreparedStatement preparedStatement = connection.prepareStatement(usernameQuery);
-                        ResultSet resultSet = preparedStatement.executeQuery()
-                    ) {
-                        System.out.println("Usernames in the players table:");
-                        while (resultSet.next()) {
-                            String username = resultSet.getString("player_name");
-                            System.out.println(username);
-                        }
-                        System.out.println("--------------------------------");
-            
-                    } catch (SQLException e) {
-                        System.out.println("Usernames in database error: " + e.getMessage());
-                    }
-            
-                    Scanner inputScanner = new Scanner(System.in);
-                    choice = inputScanner.nextLine();
-            
-                    if (choice.equalsIgnoreCase("l")) {
-                        game.login();
-                    } else if (choice.equalsIgnoreCase("c")) {
-                        game.createPlayer();
-                    } else {
-                        System.out.println("Invalid input. Please enter 'l' to login or 'c' to create a new player.");
-                    }
-                    inputScanner.close();
-                }
-            
-                // Now go back to the main menu after successful login or account creation
-                game.mainMenu();
+    public static void main(String[] args) {
+        try (Connection connection = DriverManager.getConnection(JDBC_URL, JDBC_USER, JDBC_PASSWORD)) {
+            System.out.println("Connected to the database.");
+
+            try (Statement statement = connection.createStatement()) {
+                // Execute each SQL statement
+                statement.execute(createPlayersTable);
+                System.out.println("Created 'players' table successfully.");
+
+                statement.execute(createGamesTable);
+                System.out.println("Created 'games' table successfully.");
             }
+        } catch (SQLException e) {
+            System.err.println("Error executing SQL: " + e.getMessage());
+        }
+
+        Game game = new Game();
+
+        System.out.println("Welcome to Brikks!");
+
+        // Ask user to login or create a new account with input validation
+        String choice = "";
+        while (!choice.equalsIgnoreCase("l") && !choice.equalsIgnoreCase("c")) {
+            System.out.println("Enter 'l' to login, 'c' to create a new player:");
+
+            // Show usernames in db
+            String usernameQuery = "SELECT player_name FROM players";
+            try (
+                    Connection connection = DriverManager.getConnection(JDBC_URL, JDBC_USER, JDBC_PASSWORD);
+                    PreparedStatement preparedStatement = connection.prepareStatement(usernameQuery);
+                    ResultSet resultSet = preparedStatement.executeQuery()) {
+                System.out.println("Usernames in the players table:");
+                while (resultSet.next()) {
+                    String username = resultSet.getString("player_name");
+                    System.out.println(username);
+                }
+                System.out.println("--------------------------------");
+
+            } catch (SQLException e) {
+                System.out.println("Usernames in database error: " + e.getMessage());
+            }
+
+            Scanner inputScanner = new Scanner(System.in);
+            choice = inputScanner.nextLine();
+
+            if (choice.equalsIgnoreCase("l")) {
+                game.login();
+            } else if (choice.equalsIgnoreCase("c")) {
+                game.createPlayer();
+            } else {
+                System.out.println("Invalid input. Please enter 'l' to login or 'c' to create a new player.");
+            }
+            inputScanner.close();
+        }
+
+        // Now go back to the main menu after successful login or account creation
+        game.mainMenu();
+    }
 
     public void mainMenu() {
         boolean isRunning = true;
-    
+
         while (isRunning) {
             System.out.println(
                     "\nEnter 'n' to start a new game, 'l' to load a saved game, 'v' to view the leaderboard, 's' to search for a player, 'q' to quit the game:");
-    
+
             String choice = scanner.nextLine();
-    
+
             if (choice.equalsIgnoreCase("n")) {
                 System.out.println("Starting a new game...");
                 resetGameState();
@@ -124,14 +123,14 @@ public class Game {
                 System.out.println("Invalid input. Please choose a valid option.");
             }
         }
-    
+
         System.out.println("Goodbye!");
     }
 
     public void searchPlayerScores() {
         System.out.println("Enter the player's name to search their top scores:");
         String playerName = scanner.nextLine();
-    
+
         Leaderboard leaderboard = new Leaderboard();
         leaderboard.showPlayerTopScores(playerName);
     }
@@ -173,8 +172,8 @@ public class Game {
     }
 
     private void resetGameState() {
-        board.reset();  // Reset the board state
-        startTime = 0;  // Reset the start time
+        board.reset(); // Reset the board state
+        startTime = 0; // Reset the start time
     }
 
     private boolean handlePlayerAction(String[][] block) {
@@ -248,14 +247,14 @@ public class Game {
             try (PreparedStatement pstmt = conn.prepareStatement(checkQuery)) {
                 pstmt.setInt(1, player.getPlayerId());
                 ResultSet rs = pstmt.executeQuery();
-    
+
                 if (rs.next()) {
                     // If an ongoing game exists, update it
                     String updateQuery = """
-                        UPDATE games 
-                        SET score = ?, energy = ?, bombs = ?, board = ?, end_time = ?, is_ended = TRUE 
-                        WHERE id = ?
-                    """;
+                                UPDATE games
+                                SET score = ?, energy = ?, bombs = ?, board = ?, end_time = ?, is_ended = TRUE
+                                WHERE id = ?
+                            """;
                     try (PreparedStatement updateStmt = conn.prepareStatement(updateQuery)) {
                         updateStmt.setInt(1, player.getScore());
                         updateStmt.setInt(2, player.getEnergyPoints());
@@ -269,9 +268,9 @@ public class Game {
                 } else {
                     // Insert a new game record
                     String insertQuery = """
-                        INSERT INTO games (player_id, board, score, energy, bombs, start_time, end_time, is_ended) 
-                        VALUES (?, ?, ?, ?, ?, ?, ?, TRUE)
-                    """;
+                                INSERT INTO games (player_id, board, score, energy, bombs, start_time, end_time, is_ended)
+                                VALUES (?, ?, ?, ?, ?, ?, ?, TRUE)
+                            """;
                     try (PreparedStatement insertStmt = conn.prepareStatement(insertQuery)) {
                         insertStmt.setInt(1, player.getPlayerId());
                         insertStmt.setString(2, board.getState());
@@ -293,12 +292,12 @@ public class Game {
     public void loadGame() {
         try (Connection conn = DriverManager.getConnection(JDBC_URL, JDBC_USER, JDBC_PASSWORD)) {
             String loadQuery = """
-                SELECT id, board, score, energy, bombs, start_time, end_time, is_ended
-                FROM games
-                WHERE player_id = ?
-                ORDER BY id DESC
-                LIMIT 1
-            """;
+                        SELECT id, board, score, energy, bombs, start_time, end_time, is_ended
+                        FROM games
+                        WHERE player_id = ?
+                        ORDER BY id DESC
+                        LIMIT 1
+                    """;
             try (PreparedStatement pstmt = conn.prepareStatement(loadQuery)) {
                 pstmt.setInt(1, player.getPlayerId());
                 ResultSet rs = pstmt.executeQuery();
@@ -332,29 +331,28 @@ public class Game {
         }
     }
 
-
     public void createPlayer() {
         System.out.println("Enter a new player name:");
         String playerName = scanner.nextLine();
-    
+
         System.out.println("Enter a password for the new player:");
         String password = scanner.nextLine();
-    
+
         try (Connection conn = DriverManager.getConnection(JDBC_URL, JDBC_USER, JDBC_PASSWORD)) {
-            
+
             // Insert the new player and retrieve the generated player ID using RETURNING
             String insertPlayerQuery = "INSERT INTO players (player_name, password) VALUES (?, ?) RETURNING id";
-            
+
             try (PreparedStatement pstmt = conn.prepareStatement(insertPlayerQuery)) {
                 pstmt.setString(1, playerName);
                 pstmt.setString(2, password); // Note: In a real application, hash the password
                 ResultSet rs = pstmt.executeQuery();
-    
+
                 if (rs.next()) {
                     int playerId = rs.getInt("id"); // Get the auto-generated player ID
-                    player.setPlayerId(playerId);   // Set the generated player ID
+                    player.setPlayerId(playerId); // Set the generated player ID
                     player.setPlayerName(playerName);
-    
+
                     System.out.println("Player created successfully with ID: " + playerId);
                 }
             }
