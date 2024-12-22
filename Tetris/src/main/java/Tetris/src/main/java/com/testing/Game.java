@@ -18,7 +18,6 @@ public class Game {
         Game game = new Game();
 
         System.out.println("Welcome to Brikks!");
-
         // Ask user to login or create a new account
         System.out.println("Enter 'l' to login, 'c' to create a new player:");
         Scanner inputScanner = new Scanner(System.in);
@@ -39,9 +38,23 @@ public class Game {
 
     public void mainMenu() {
         while (true) {
-            System.out.println(
-                    "\nEnter 'n' to start a new game, 'l' to load a saved game, 'v' to view the leaderboard, 'q' to quit the game:");
-
+            System.out.println( "====================================================\n" + //
+                        "░▒▓███████▓▒░░▒▓███████▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░░▒▓███████▓▒░ \r\n" + //
+                        "░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░        \r\n" + //
+                        "░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░        \r\n" + //
+                        "░▒▓███████▓▒░░▒▓███████▓▒░░▒▓█▓▒░▒▓███████▓▒░░▒▓███████▓▒░ ░▒▓██████▓▒░  \r\n" + //
+                        "░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░      ░▒▓█▓▒░ \r\n" + //
+                        "░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░      ░▒▓█▓▒░ \r\n" + //
+                        "░▒▓███████▓▒░░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░▒▓███████▓▒░  \r\n" + //
+                        "                                                                         \r\n" + //
+                        "====================================================\n" + //
+                        "       W E L C O M E   T O   B R I K K S      \n" + //
+                        "====================================================\n" + //
+                        "              [n] NEW GAME                           \n" + //
+                        "              [l] LOAD GAME                          \n" + //
+                        "              [v] LEADERBOARD                       \n" + //
+                        "              [q] QUIT GAME                            \n" + //
+                        "====================================================\n");
             String choice = scanner.nextLine();
 
             if (choice.equalsIgnoreCase("n")) {
